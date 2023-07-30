@@ -1,6 +1,8 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
 
 -- | Rendering of modules.
 module Ormolu.Printer.Meat.Module
@@ -48,7 +50,7 @@ p_hsModule mstackHeader pragmas hsmod@HsModule {..} = do
     mapM_ (p_hsModuleHeader hsmod) hsmodName
     newline
     preserveGroups <- getPrinterOpt poRespectful
-    forM_ (normalizeImports preserveGroups hsmodImports) $ \importGroup -> do
+    forM_ (mine preserveGroups hsmodImports) $ \importGroup -> do
       forM_ importGroup (located' p_hsmodImport)
       newline
     declNewline
@@ -57,6 +59,9 @@ p_hsModule mstackHeader pragmas hsmod@HsModule {..} = do
       (if preserveSpacing then p_hsDeclsRespectGrouping else p_hsDecls) Free hsmodDecls
       newline
       spitRemainingComments
+
+mine :: Bool -> [LImportDecl GhcPs] -> [[LImportDecl GhcPs]]
+mine preserveGroups input = [input]
 
 p_hsModuleHeader :: HsModule GhcPs -> LocatedA ModuleName -> R ()
 p_hsModuleHeader HsModule {hsmodExt = XModulePs {..}, ..} moduleName = do
