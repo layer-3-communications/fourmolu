@@ -15,7 +15,6 @@ import GHC.Hs hiding (comment)
 import GHC.Types.SrcLoc
 import GHC.Utils.Outputable (ppr, showSDocUnsafe)
 import Ormolu.Config
-import Ormolu.Imports (normalizeImports)
 import Ormolu.Parser.CommentStream
 import Ormolu.Parser.Pragma
 import Ormolu.Printer.Combinators
@@ -25,6 +24,7 @@ import Ormolu.Printer.Meat.Declaration
 import Ormolu.Printer.Meat.Declaration.Warning
 import Ormolu.Printer.Meat.ImportExport
 import Ormolu.Printer.Meat.Pragma
+import Ormolu.Imports (normalizeImports)
 
 -- | Render a module-like entity (either a regular module or a backpack
 -- signature).
@@ -50,9 +50,10 @@ p_hsModule mstackHeader pragmas hsmod@HsModule {..} = do
     mapM_ (p_hsModuleHeader hsmod) hsmodName
     newline
     preserveGroups <- getPrinterOpt poRespectful
-    forM_ (mine preserveGroups hsmodImports) $ \importGroup -> do
+    forM_ (normalizeImports preserveGroups hsmodImports) $ \importGroup -> do
       forM_ importGroup (located' p_hsmodImport)
       newline
+    newline
     declNewline
     switchLayout (getLocA <$> hsmodDecls) $ do
       preserveSpacing <- getPrinterOpt poRespectful
@@ -61,7 +62,7 @@ p_hsModule mstackHeader pragmas hsmod@HsModule {..} = do
       spitRemainingComments
 
 mine :: Bool -> [LImportDecl GhcPs] -> [[LImportDecl GhcPs]]
-mine preserveGroups input = [input]
+mine _ input = [input]
 
 p_hsModuleHeader :: HsModule GhcPs -> LocatedA ModuleName -> R ()
 p_hsModuleHeader HsModule {hsmodExt = XModulePs {..}, ..} moduleName = do
