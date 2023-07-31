@@ -53,7 +53,7 @@ p_hsModule mstackHeader pragmas hsmod@HsModule {..} = do
     forM_ (normalizeImports preserveGroups hsmodImports) $ \importGroup -> do
       forM_ importGroup (located' p_hsmodImport)
       newline
-    declNewline
+    declNewlineN 2
     switchLayout (getLocA <$> hsmodDecls) $ do
       preserveSpacing <- getPrinterOpt poRespectful
       (if preserveSpacing then p_hsDeclsRespectGrouping else p_hsDecls) Free hsmodDecls
