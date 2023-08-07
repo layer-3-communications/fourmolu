@@ -17,6 +17,7 @@ module Ormolu.Printer.Internal
     space,
     newline,
     declNewline,
+    declNewlineN,
     askSourceType,
     askModuleFixityMap,
     inci,
@@ -331,6 +332,9 @@ space = R . modify $ \sc ->
 
 declNewline :: R ()
 declNewline = newlineRawN =<< getPrinterOpt poNewlinesBetweenDecls
+
+declNewlineN :: Int -> R ()
+declNewlineN = newlineRawN
 
 -- | Output a newline. First time 'newline' is used after some non-'newline'
 -- output it gets inserted immediately. Second use of 'newline' does not

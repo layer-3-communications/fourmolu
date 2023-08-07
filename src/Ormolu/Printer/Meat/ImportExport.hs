@@ -1,6 +1,8 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
 
 -- | Rendering of import and export lists.
 module Ormolu.Printer.Meat.ImportExport
@@ -32,7 +34,7 @@ p_hsmodExports xs =
 
 p_hsmodImport :: ImportDecl GhcPs -> R ()
 p_hsmodImport ImportDecl {..} = do
-  useQualifiedPost <- isExtensionEnabled ImportQualifiedPost
+  useQualifiedPost <- pure False --isExtensionEnabled ImportQualifiedPost
   txt "import"
   space
   when (ideclSource == IsBoot) (txt "{-# SOURCE #-}")

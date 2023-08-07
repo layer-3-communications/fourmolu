@@ -32,24 +32,25 @@ import Ormolu.Utils (groupBy', notImplemented, separatedByBlank, showOutputable)
 -- given input list.
 normalizeImports :: Bool -> [LImportDecl GhcPs] -> [[LImportDecl GhcPs]]
 normalizeImports preserveGroups =
-  map
-    ( fmap snd
-        . M.toAscList
-        . M.fromListWith combineImports
-        . fmap (\x -> (importId x, g x))
-    )
-    . if preserveGroups
-      then map toList . groupBy' (\x y -> not $ separatedByBlank getLocA x y)
-      else pure
-  where
-    g :: LImportDecl GhcPs -> LImportDecl GhcPs
-    g (L l ImportDecl {..}) =
-      L
-        l
-        ImportDecl
-          { ideclImportList = second (fmap normalizeLies) <$> ideclImportList,
-            ..
-          }
+  map toList . groupBy' (\x y -> not $ separatedByBlank getLocA x y)
+  -- map
+  --   ( fmap snd
+  --       . M.toAscList
+  --       . M.fromListWith combineImports
+  --       . fmap (\x -> (importId x, g x))
+  --   )
+  --   . if preserveGroups
+  --     then map toList . groupBy' (\x y -> not $ separatedByBlank getLocA x y)
+  --     else pure
+  -- where
+  --   g :: LImportDecl GhcPs -> LImportDecl GhcPs
+  --   g (L l ImportDecl {..}) =
+  --     L
+  --       l
+  --       ImportDecl
+  --         { ideclImportList = second (fmap normalizeLies) <$> ideclImportList,
+  --           ..
+  --         }
 
 -- | Combine two import declarations. It should be assumed that 'ImportId's
 -- are equal.

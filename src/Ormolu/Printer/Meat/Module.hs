@@ -1,6 +1,8 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
 
 -- | Rendering of modules.
 module Ormolu.Printer.Meat.Module
@@ -13,7 +15,6 @@ import GHC.Hs hiding (comment)
 import GHC.Types.SrcLoc
 import GHC.Utils.Outputable (ppr, showSDocUnsafe)
 import Ormolu.Config
-import Ormolu.Imports (normalizeImports)
 import Ormolu.Parser.CommentStream
 import Ormolu.Parser.Pragma
 import Ormolu.Printer.Combinators
@@ -23,6 +24,7 @@ import Ormolu.Printer.Meat.Declaration
 import Ormolu.Printer.Meat.Declaration.Warning
 import Ormolu.Printer.Meat.ImportExport
 import Ormolu.Printer.Meat.Pragma
+import Ormolu.Imports (normalizeImports)
 
 -- | Render a module-like entity (either a regular module or a backpack
 -- signature).
@@ -51,7 +53,7 @@ p_hsModule mstackHeader pragmas hsmod@HsModule {..} = do
     forM_ (normalizeImports preserveGroups hsmodImports) $ \importGroup -> do
       forM_ importGroup (located' p_hsmodImport)
       newline
-    declNewline
+    declNewlineN 2
     switchLayout (getLocA <$> hsmodDecls) $ do
       preserveSpacing <- getPrinterOpt poRespectful
       (if preserveSpacing then p_hsDeclsRespectGrouping else p_hsDecls) Free hsmodDecls
